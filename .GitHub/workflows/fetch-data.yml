@@ -1,0 +1,37 @@
+name: Fetch Cycling Data
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Elke nacht om 03:00 UTC
+  workflow_dispatch:       # Handmatig te starten via GitHub UI
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests python-dateutil
+
+      - name: Fetch Intervals.icu data
+        env:
+          INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
+        run: python scripts/fetch_intervals.py
+
+      - name: Commit & push data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "🚴 Update cycling data [$(date +'%Y-%m-%d')]"
+          git push
+          
