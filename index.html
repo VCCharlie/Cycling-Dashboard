@@ -167,6 +167,63 @@
   }
   .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ── Activiteiten heatmap ── */
+  .heatmap-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .heatmap {
+    display: grid;
+    grid-template-rows: repeat(7, 13px);
+    grid-auto-flow: column;
+    gap: 3px;
+    width: max-content;
+  }
+  .hm-cell {
+    width: 13px; height: 13px;
+    border-radius: 2px;
+    background: #e9ecef;
+    cursor: default;
+    position: relative;
+  }
+  .hm-cell[data-level="1"] { background: rgba(249,115,22,0.25); }
+  .hm-cell[data-level="2"] { background: rgba(249,115,22,0.50); }
+  .hm-cell[data-level="3"] { background: rgba(249,115,22,0.75); }
+  .hm-cell[data-level="4"] { background: rgba(249,115,22,1.00); }
+  .hm-cell[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e2330;
+    color: #fff;
+    font-size: 11px;
+    font-family: var(--font-head);
+    white-space: nowrap;
+    padding: 3px 7px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .heatmap-days {
+    display: grid;
+    grid-template-rows: repeat(7, 13px);
+    gap: 3px;
+    margin-right: 6px;
+    font-size: 9px;
+    font-family: var(--font-head);
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .heatmap-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
   /* ── Stat cards row ── */
   .stat-grid {
     display: grid;
@@ -377,6 +434,14 @@
       <div class="chart-card">
         <div class="chart-title">Hoogtemeters per maand (m)</div>
         <div class="chart-wrap"><canvas id="chart-monthly-elevation"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid cols-1">
+      <div class="chart-card">
+        <div class="chart-title">Activiteiten — afgelopen 52 weken</div>
+        <div id="heatmap-container" class="heatmap-row">
+          <div class="loading" style="height:80px">Data laden...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -591,6 +656,7 @@ async function init() {
   $('filter-to').value = today;
 
   renderHome();
+  renderHeatmap();
   renderVorm();
   renderActiviteiten();
   renderPower();
@@ -652,6 +718,85 @@ function renderHome() {
     moKeys.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleString('nl-NL',{month:'short',year:'2-digit'}); }),
     [{ data: moKeys.map(m => Math.round(monthElev[m])), backgroundColor: 'rgba(22,163,74,0.75)', borderRadius: 3 }]
   );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Eddington getal
+// ─────────────────────────────────────────────────────────────────────────────
+function calcEddington(activities) {
+  // Groepeer km per dag (meerdere ritten op 1 dag tellen bij elkaar op)
+  const byDay = {};
+  for (const a of activities) {
+    byDay[a.date] = (byDay[a.date] || 0) + (a.distance_km || 0);
+  }
+  // Grootste E zodat ≥ E dagen bestaan waarop ≥ E km gereden is
+  const dists = Object.values(byDay).map(d => Math.floor(d)).sort((a, b) => b - a);
+  let E = 0;
+  for (let i = 0; i < dists.length; i++) {
+    if (dists[i] >= i + 1) E = i + 1; else break;
+  }
+  return E;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Activiteiten heatmap (GitHub-stijl, 52 weken)
+// ─────────────────────────────────────────────────────────────────────────────
+function renderHeatmap() {
+  const acts = DATA.activities || [];
+
+  // Bouw een dag → km map
+  const byDay = {};
+  for (const a of acts) {
+    byDay[a.date] = (byDay[a.date] || 0) + (a.distance_km || 0);
+  }
+  const maxKm = Math.max(0, ...Object.values(byDay));
+
+  // Kleur-drempelwaarden op basis van max (relatief)
+  function level(km) {
+    if (!km) return 0;
+    if (maxKm === 0) return 0;
+    const pct = km / maxKm;
+    if (pct < 0.15) return 1;
+    if (pct < 0.40) return 2;
+    if (pct < 0.70) return 3;
+    return 4;
+  }
+
+  // Bouw 52 weken terug, begin op maandag
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  // Ga naar de maandag van de huidige week
+  const dow = today.getDay() || 7;  // 1=ma, 7=zo
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dow - 1));
+  // Start 52 weken geleden
+  const startMonday = new Date(monday);
+  startMonday.setDate(monday.getDate() - 51 * 7);
+
+  // Verzamel cellen per week (52 weken × 7 dagen)
+  const dayLabels = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+  const cells = [];  // 364 datums in volgorde (dag 0=startMonday)
+  for (let i = 0; i < 52 * 7; i++) {
+    const d = new Date(startMonday);
+    d.setDate(startMonday.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const km = byDay[key] || 0;
+    cells.push({ key, km, lv: level(km) });
+  }
+
+  // Bouw HTML: dag-labels links, dan grid
+  const labelHtml = `<div class="heatmap-days">${dayLabels.map(l => `<span>${l}</span>`).join('')}</div>`;
+
+  const gridCells = cells.map(c => {
+    const title = c.km
+      ? `${c.key}: ${c.km.toFixed(1)} km`
+      : c.key;
+    return `<div class="hm-cell" data-level="${c.lv}" title="${title}"></div>`;
+  }).join('');
+
+  $('heatmap-container').innerHTML =
+    labelHtml +
+    `<div class="heatmap-wrap"><div class="heatmap">${gridCells}</div></div>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -773,6 +918,8 @@ function renderPower() {
       / withPower.filter(a=>a.norm_power_w).length)
     : 0;
 
+  const eddington = calcEddington(acts);
+
   $('power-stats').innerHTML =
     statCard('1 min best', best1m  || '—', 'W') +
     statCard('5 min best', best5m  || '—', 'W', 'blue') +
@@ -781,7 +928,8 @@ function renderPower() {
     statCard('eFTP', eFTP || '—', 'W', 'green') +
     (eFTP ? statCard('eFTP W/kg', (eFTP/WEIGHT_KG).toFixed(2), 'w/kg', 'green') : '') +
     statCard('Gem. NP', avgNP || '—', 'W') +
-    (best20m ? statCard('W/kg (20m)', (best20m/WEIGHT_KG).toFixed(2), 'w/kg') : '');
+    (best20m ? statCard('W/kg (20m)', (best20m/WEIGHT_KG).toFixed(2), 'w/kg') : '') +
+    statCard('Eddington', eddington || '—', 'km');
 
   // ── Best efforts grafiek per maand ───────────────────────────────────────
   const monthBests = {};
