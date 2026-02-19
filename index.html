@@ -431,6 +431,13 @@ function statCard(label, value, unit='', colorClass='') {
   </div>`;
 }
 
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
 function makeChart(id, type, labels, datasets, extra={}) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
