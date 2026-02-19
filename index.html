@@ -10,15 +10,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 <style>
   :root {
-    --bg:        #0a0c0f;
-    --surface:   #111318;
-    --border:    #1e2229;
+    --bg:        #f0f2f5;
+    --surface:   #ffffff;
+    --border:    #e2e8f0;
     --accent:    #f97316;
     --accent2:   #3b82f6;
-    --green:     #22c55e;
-    --red:       #ef4444;
-    --text:      #e8eaf0;
-    --muted:     #5a6070;
+    --green:     #16a34a;
+    --red:       #dc2626;
+    --text:      #1e2330;
+    --muted:     #64748b;
     --font-head: 'Barlow Condensed', sans-serif;
     --font-body: 'Barlow', sans-serif;
   }
@@ -34,16 +34,6 @@
     overflow-x: hidden;
   }
 
-  /* ── Noise texture overlay ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-    background-size: 200px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
   /* ── Header ── */
   header {
     position: relative; z-index: 10;
@@ -52,7 +42,8 @@
     justify-content: space-between;
     padding: 20px 32px;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(to right, rgba(249,115,22,0.06), transparent);
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   .logo {
@@ -120,6 +111,62 @@
   .tab { display: none; }
   .tab.active { display: block; }
 
+  /* ── Toolbar (filters boven tabellen/grafieken) ── */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .toolbar label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .toolbar input[type="date"],
+  .toolbar input[type="text"],
+  .toolbar select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 6px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .toolbar input:focus,
+  .toolbar select:focus { border-color: var(--accent); }
+  .toolbar .search-input { min-width: 180px; }
+  .toolbar .count-label {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--font-head);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .btn-reset {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+
   /* ── Stat cards row ── */
   .stat-grid {
     display: grid;
@@ -136,14 +183,15 @@
     position: relative;
     overflow: hidden;
     animation: fadeUp 0.4s ease both;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   .stat-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 2px;
+    height: 3px;
     background: var(--accent);
-    opacity: 0.6;
+    opacity: 0.7;
   }
 
   .stat-label {
@@ -190,6 +238,7 @@
     border-radius: 8px;
     padding: 20px;
     animation: fadeUp 0.5s ease both;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
 
   .chart-title {
@@ -223,17 +272,20 @@
     color: var(--muted);
     text-align: left;
     padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    background: var(--bg);
+    white-space: nowrap;
   }
 
   td {
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
+    white-space: nowrap;
   }
 
   tbody tr { transition: background 0.15s; }
-  tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody tr:hover { background: rgba(249,115,22,0.04); }
 
   .badge {
     display: inline-block;
@@ -245,9 +297,9 @@
     letter-spacing: 1px;
     text-transform: uppercase;
   }
-  .badge.ride       { background: rgba(249,115,22,0.15); color: var(--accent); }
-  .badge.virtualride{ background: rgba(59,130,246,0.15); color: var(--accent2); }
-  .badge.gravel     { background: rgba(34,197,94,0.15);  color: var(--green); }
+  .badge.ride       { background: rgba(249,115,22,0.12); color: #c2510a; }
+  .badge.virtualride{ background: rgba(59,130,246,0.12); color: #2563eb; }
+  .badge.gravel     { background: rgba(22,163,74,0.12);  color: var(--green); }
 
   /* ── TSB kleur ── */
   .tsb-pos { color: var(--green); font-weight: 600; }
@@ -276,6 +328,8 @@
   @media (max-width: 768px) {
     header, nav, main { padding-left: 16px; padding-right: 16px; }
     .chart-grid.cols-2 { grid-template-columns: 1fr; }
+    .toolbar { flex-direction: column; align-items: flex-start; }
+    .toolbar .count-label { margin-left: 0; }
   }
 </style>
 </head>
@@ -297,6 +351,15 @@
 
   <!-- ── TAB: OVERZICHT ── -->
   <div id="tab-home" class="tab active">
+    <div class="toolbar">
+      <label>Periode</label>
+      <select id="home-period" onchange="renderHome()">
+        <option value="52">Afgelopen jaar</option>
+        <option value="26" selected>Afgelopen 26 weken</option>
+        <option value="13">Afgelopen 13 weken</option>
+        <option value="8">Afgelopen 8 weken</option>
+      </select>
+    </div>
     <div class="stat-grid" id="home-stats">
       <div class="loading">Data laden...</div>
     </div>
@@ -333,6 +396,15 @@
 
   <!-- ── TAB: ACTIVITEITEN ── -->
   <div id="tab-activiteiten" class="tab">
+    <div class="toolbar">
+      <label>Van</label>
+      <input type="date" id="filter-from" onchange="applyActivityFilter()" />
+      <label>Tot</label>
+      <input type="date" id="filter-to" onchange="applyActivityFilter()" />
+      <input type="text" class="search-input" id="filter-search" placeholder="Zoek op naam..." oninput="applyActivityFilter()" />
+      <button class="btn-reset" onclick="resetActivityFilter()">Wis filter</button>
+      <span class="count-label" id="activity-count"></span>
+    </div>
     <div class="chart-card">
       <div class="table-wrap">
         <table>
@@ -348,11 +420,12 @@
               <th>NP</th>
               <th>TSS</th>
               <th>Avg HR</th>
-              <th>eFTP</th>
+              <th>FTP</th>
+              <th>W/kg</th>
             </tr>
           </thead>
           <tbody id="activities-tbody">
-            <tr><td colspan="11"><div class="loading">Data laden...</div></td></tr>
+            <tr><td colspan="12"><div class="loading">Data laden...</div></td></tr>
           </tbody>
         </table>
       </div>
@@ -387,13 +460,28 @@
 const WEIGHT_KG = 75;  // ← Pas aan naar jouw gewicht
 
 const CHART_DEFAULTS = {
-  color: '#e8eaf0',
   responsive: true,
   maintainAspectRatio: false,
-  plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1e2229', titleColor: '#e8eaf0', bodyColor: '#9aa0b0', borderColor: '#2e3340', borderWidth: 1 } },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#ffffff',
+      titleColor: '#1e2330',
+      bodyColor: '#64748b',
+      borderColor: '#e2e8f0',
+      borderWidth: 1,
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+    }
+  },
   scales: {
-    x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6070', font: { family: 'Barlow Condensed', size: 11 } } },
-    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6070', font: { family: 'Barlow Condensed', size: 11 } } }
+    x: {
+      grid: { color: 'rgba(0,0,0,0.05)' },
+      ticks: { color: '#64748b', font: { family: 'Barlow Condensed', size: 11 } }
+    },
+    y: {
+      grid: { color: 'rgba(0,0,0,0.05)' },
+      ticks: { color: '#64748b', font: { family: 'Barlow Condensed', size: 11 } }
+    }
   }
 };
 
@@ -401,6 +489,32 @@ const CHART_DEFAULTS = {
 // Utils
 // ─────────────────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
+
+// Chart instances bijhouden om te kunnen destroyen bij herrender
+const chartInstances = {};
+
+function makeChart(id, type, labels, datasets, extra={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (chartInstances[id]) { chartInstances[id].destroy(); }
+  chartInstances[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: deepMerge(CHART_DEFAULTS, extra)
+  });
+}
+
+function deepMerge(base, override) {
+  const result = Object.assign({}, base);
+  for (const key of Object.keys(override)) {
+    if (override[key] && typeof override[key] === 'object' && !Array.isArray(override[key])) {
+      result[key] = deepMerge(base[key] || {}, override[key]);
+    } else {
+      result[key] = override[key];
+    }
+  }
+  return result;
+}
 
 function secToHHMM(s) {
   if (!s) return '—';
@@ -438,12 +552,6 @@ function showTab(name, btn) {
   btn.classList.add('active');
 }
 
-function makeChart(id, type, labels, datasets, extra={}) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  new Chart(ctx, { type, data: { labels, datasets }, options: { ...CHART_DEFAULTS, ...extra } });
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Data laden
 // ─────────────────────────────────────────────────────────────────────────────
@@ -468,12 +576,19 @@ async function init() {
     loadJSON('power_curve'),
   ]);
 
-  DATA = { summary, activities, wellness, powerCurve };
+  DATA = { summary, activities: activities || [], wellness: wellness || [], powerCurve: powerCurve || [] };
 
   if (summary?.updated_at) {
     const d = new Date(summary.updated_at);
     $('updated-at').textContent = `Bijgewerkt: ${d.toLocaleDateString('nl-NL', {day:'numeric',month:'long',year:'numeric'})}`;
   }
+
+  // Standaard datumfilter: begin van dit jaar
+  const now = new Date();
+  const yearStart = `${now.getFullYear()}-01-01`;
+  const today = now.toISOString().slice(0,10);
+  $('filter-from').value = yearStart;
+  $('filter-to').value = today;
 
   renderHome();
   renderVorm();
@@ -486,17 +601,32 @@ async function init() {
 // ─────────────────────────────────────────────────────────────────────────────
 function renderHome() {
   const s = DATA.summary || {};
-  const acts = DATA.activities || [];
+  const allActs = DATA.activities || [];
+  const weeks = parseInt($('home-period')?.value || '26', 10);
+
+  // Bereken cutoff datum
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - weeks * 7);
+  const cutoffStr = cutoff.toISOString().slice(0,10);
+  const acts = allActs.filter(a => a.date >= cutoffStr);
+
+  // Stat-kaarten: cijfers over gefilterde periode
+  const totDist = acts.reduce((t,a) => t + (a.distance_km||0), 0);
+  const totElev = acts.reduce((t,a) => t + (a.elevation_m||0), 0);
+  const totSec  = acts.reduce((t,a) => t + (a.moving_time||0), 0);
+  const totTSS  = acts.reduce((t,a) => t + (a.tss||0), 0);
 
   $('home-stats').innerHTML =
-    statCard('Ritten', s.total_rides ?? '—') +
-    statCard('Afstand', s.total_distance_km ? s.total_distance_km.toLocaleString('nl-NL') : '—', 'km', 'blue') +
-    statCard('Hoogtemeters', s.total_elevation_m ? s.total_elevation_m.toLocaleString('nl-NL') : '—', 'm') +
-    statCard('Uren', s.total_hours ?? '—', 'h', 'green') +
-    statCard('Huidig CTL', s.current_ctl ?? '—') +
-    statCard('TSB', s.current_tsb ?? '—');
+    statCard('Ritten', acts.length) +
+    statCard('Afstand', Math.round(totDist).toLocaleString('nl-NL'), 'km', 'blue') +
+    statCard('Hoogtemeters', Math.round(totElev).toLocaleString('nl-NL'), 'm') +
+    statCard('Uren', (totSec/3600).toFixed(1), 'h', 'green') +
+    statCard('TSS totaal', Math.round(totTSS)) +
+    statCard('CTL nu', s.current_ctl ?? '—') +
+    statCard('TSB nu', s.current_tsb != null
+      ? `<span class="${(s.current_tsb||0) >= 0 ? 'tsb-pos':'tsb-neg'}">${s.current_tsb}</span>` : '—');
 
-  // Wekelijkse afstand
+  // Wekelijkse afstand & TSS
   const weekDist = {}, weekTSS = {}, monthElev = {};
   for (const a of acts) {
     const wk = getWeekKey(a.date);
@@ -506,21 +636,21 @@ function renderHome() {
     monthElev[mo] = (monthElev[mo]||0) + (a.elevation_m||0);
   }
 
-  const weeks = Object.keys(weekDist).sort().slice(-26);
+  const wkKeys = Object.keys(weekDist).sort();
   makeChart('chart-weekly-distance', 'bar',
-    weeks.map(w => w.slice(5)),
-    [{ data: weeks.map(w => Math.round(weekDist[w])), backgroundColor: 'rgba(249,115,22,0.7)', borderRadius: 3 }]
+    wkKeys.map(w => w.slice(5)),
+    [{ data: wkKeys.map(w => Math.round(weekDist[w])), backgroundColor: 'rgba(249,115,22,0.75)', borderRadius: 3 }]
   );
 
   makeChart('chart-weekly-tss', 'bar',
-    weeks.map(w => w.slice(5)),
-    [{ data: weeks.map(w => Math.round(weekTSS[w]||0)), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 3 }]
+    wkKeys.map(w => w.slice(5)),
+    [{ data: wkKeys.map(w => Math.round(weekTSS[w]||0)), backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 3 }]
   );
 
-  const months = Object.keys(monthElev).sort();
+  const moKeys = Object.keys(monthElev).sort();
   makeChart('chart-monthly-elevation', 'bar',
-    months.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleString('nl-NL',{month:'short',year:'2-digit'}); }),
-    [{ data: months.map(m => Math.round(monthElev[m])), backgroundColor: 'rgba(34,197,94,0.7)', borderRadius: 3 }]
+    moKeys.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleString('nl-NL',{month:'short',year:'2-digit'}); }),
+    [{ data: moKeys.map(m => Math.round(monthElev[m])), backgroundColor: 'rgba(22,163,74,0.75)', borderRadius: 3 }]
   );
 }
 
@@ -543,11 +673,18 @@ function renderVorm() {
   makeChart('chart-ctl', 'line', labels, [
     { label: 'CTL', data: w.map(x=>x.ctl), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.4, pointRadius: 0, fill: true },
     { label: 'ATL', data: w.map(x=>x.atl), borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.06)', tension: 0.4, pointRadius: 0, fill: true },
-    { label: 'TSB', data: w.map(x=>x.tsb), borderColor: '#22c55e', tension: 0.4, pointRadius: 0 },
+    { label: 'TSB', data: w.map(x=>x.tsb), borderColor: '#16a34a', tension: 0.4, pointRadius: 0 },
   ], {
     plugins: {
-      legend: { display: true, labels: { color: '#9aa0b0', font: { family: 'Barlow Condensed', size: 12 } } },
-      annotation: { annotations: { zero: { type: 'line', yMin: 0, yMax: 0, borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } } }
+      legend: {
+        display: true,
+        labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } }
+      },
+      annotation: {
+        annotations: {
+          zero: { type: 'line', yMin: 0, yMax: 0, borderColor: 'rgba(0,0,0,0.15)', borderWidth: 1 }
+        }
+      }
     }
   });
 }
@@ -556,28 +693,60 @@ function renderVorm() {
 // Tab: Activiteiten
 // ─────────────────────────────────────────────────────────────────────────────
 function renderActiviteiten() {
-  const acts = [...(DATA.activities || [])].sort((a,b) => b.date.localeCompare(a.date));
+  applyActivityFilter();
+}
+
+function applyActivityFilter() {
+  const from   = $('filter-from')?.value || '';
+  const to     = $('filter-to')?.value   || '';
+  const search = ($('filter-search')?.value || '').toLowerCase().trim();
+
+  let acts = [...(DATA.activities || [])].sort((a,b) => b.date.localeCompare(a.date));
+
+  if (from) acts = acts.filter(a => a.date >= from);
+  if (to)   acts = acts.filter(a => a.date <= to);
+  if (search) acts = acts.filter(a => (a.title||'').toLowerCase().includes(search));
+
+  const total = (DATA.activities || []).length;
+  $('activity-count').textContent = acts.length === total
+    ? `${total} activiteiten`
+    : `${acts.length} van ${total} activiteiten`;
 
   if (!acts.length) {
-    $('activities-tbody').innerHTML = '<tr><td colspan="11" style="color:var(--muted);padding:20px">Geen activiteiten gevonden</td></tr>';
+    $('activities-tbody').innerHTML = `<tr><td colspan="12" style="color:var(--muted);padding:20px;text-align:center">Geen activiteiten gevonden</td></tr>`;
     return;
   }
 
-  $('activities-tbody').innerHTML = acts.map(a => `
-    <tr>
+  $('activities-tbody').innerHTML = acts.map(a => {
+    // FTP: gebruik ftp_w (ingesteld voor die activiteit), anders summary FTP
+    const ftp = a.ftp_w || (DATA.summary?.best_20min_power_w ? Math.round((DATA.summary.best_20min_power_w) * 0.95) : null);
+    // W/kg op basis van NP of avg power
+    const pw = a.norm_power_w || a.avg_power_w;
+    const wkg = pw ? (pw / WEIGHT_KG).toFixed(2) : null;
+
+    return `<tr>
       <td>${a.date}</td>
-      <td>${a.title || '—'}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${a.title || '—'}</td>
       <td><span class="badge ${badgeClass(a.type)}">${a.type||'—'}</span></td>
-      <td>${a.distance_km} km</td>
+      <td>${a.distance_km ? a.distance_km.toFixed(1)+' km' : '—'}</td>
       <td>${secToHHMM(a.moving_time)}</td>
       <td>${a.elevation_m ? Math.round(a.elevation_m)+' m' : '—'}</td>
       <td>${a.avg_power_w ? a.avg_power_w+' W' : '—'}</td>
       <td>${a.norm_power_w ? a.norm_power_w+' W' : '—'}</td>
       <td>${a.tss ? Math.round(a.tss) : '—'}</td>
       <td>${a.avg_hr_bpm ? Math.round(a.avg_hr_bpm)+' bpm' : '—'}</td>
-      <td>${a.eftp_w ? a.eftp_w+' W' : '—'}</td>
-    </tr>
-  `).join('');
+      <td>${ftp ? ftp+' W' : '—'}</td>
+      <td>${wkg ? wkg+' w/kg' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function resetActivityFilter() {
+  const now = new Date();
+  $('filter-from').value  = `${now.getFullYear()}-01-01`;
+  $('filter-to').value    = now.toISOString().slice(0,10);
+  $('filter-search').value = '';
+  applyActivityFilter();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -588,26 +757,33 @@ function renderPower() {
   const s    = DATA.summary || {};
   const withPower = acts.filter(a => a.avg_power_w);
 
-  // Season best efforts uit activiteiten
+  // Season best efforts
   const best1m  = Math.max(0, ...acts.map(a => a.best_1min_w  || 0));
   const best5m  = Math.max(0, ...acts.map(a => a.best_5min_w  || 0));
   const best20m = Math.max(0, ...acts.map(a => a.best_20min_w || 0));
   const best60m = Math.max(0, ...acts.map(a => a.best_60min_w || 0));
-  const eFTP    = s.latest_eftp_w || 0;
-  const avgNP   = withPower.length
-    ? Math.round(withPower.filter(a=>a.norm_power_w).reduce((t,a)=>t+(a.norm_power_w||0),0) / Math.max(1, withPower.filter(a=>a.norm_power_w).length))
+
+  // eFTP: gebruik latest_eftp_w als > 0, anders 95% van best 20-min
+  const eFTP = (s.latest_eftp_w && s.latest_eftp_w > 0)
+    ? s.latest_eftp_w
+    : (best20m > 0 ? Math.round(best20m * 0.95) : (s.best_20min_power_w ? Math.round(s.best_20min_power_w * 0.95) : 0));
+
+  const avgNP = withPower.filter(a=>a.norm_power_w).length
+    ? Math.round(withPower.filter(a=>a.norm_power_w).reduce((t,a)=>t+(a.norm_power_w||0),0)
+      / withPower.filter(a=>a.norm_power_w).length)
     : 0;
 
   $('power-stats').innerHTML =
     statCard('1 min best', best1m  || '—', 'W') +
     statCard('5 min best', best5m  || '—', 'W', 'blue') +
-    statCard('20 min best', best20m || '—', 'W') +
-    statCard('60 min best', best60m || '—', 'W', 'blue') +
+    statCard('20 min best', best20m || s.best_20min_power_w || '—', 'W') +
+    statCard('60 min best', best60m || s.best_60min_power_w || '—', 'W', 'blue') +
     statCard('eFTP', eFTP || '—', 'W', 'green') +
+    (eFTP ? statCard('eFTP W/kg', (eFTP/WEIGHT_KG).toFixed(2), 'w/kg', 'green') : '') +
     statCard('Gem. NP', avgNP || '—', 'W') +
-    (best20m ? statCard('W/kg (20m)', (best20m/WEIGHT_KG).toFixed(2), 'w/kg', 'green') : '');
+    (best20m ? statCard('W/kg (20m)', (best20m/WEIGHT_KG).toFixed(2), 'w/kg') : '');
 
-  // ── Best efforts grafiek (season bests per maand) ─────────────────────
+  // ── Best efforts grafiek per maand ───────────────────────────────────────
   const monthBests = {};
   for (const a of acts) {
     const mo = getMonthKey(a.date);
@@ -622,9 +798,11 @@ function renderPower() {
   makeChart('chart-best-efforts', 'line', moLabels, [
     { label: '5 min',  data: months.map(m => monthBests[m].b5  || null), borderColor: '#3b82f6', tension: 0.4, pointRadius: 3, spanGaps: true },
     { label: '20 min', data: months.map(m => monthBests[m].b20 || null), borderColor: '#f97316', tension: 0.4, pointRadius: 3, spanGaps: true },
-    { label: '60 min', data: months.map(m => monthBests[m].b60 || null), borderColor: '#22c55e', tension: 0.4, pointRadius: 3, spanGaps: true },
+    { label: '60 min', data: months.map(m => monthBests[m].b60 || null), borderColor: '#16a34a', tension: 0.4, pointRadius: 3, spanGaps: true },
   ], {
-    plugins: { legend: { display: true, labels: { color: '#9aa0b0', font: { family: 'Barlow Condensed', size: 12 } } } }
+    plugins: {
+      legend: { display: true, labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } } }
+    }
   });
 
   // ── MMP curve ────────────────────────────────────────────────────────────
