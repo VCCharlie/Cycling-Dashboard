@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Start datum (YYYY-MM-DD). Leeg = afgelopen 12 maanden. Gebruik bv. "2015-01-01" voor volledige historie.'
+        required: false
+        default: ''
 permissions:
   contents: write
 jobs:
@@ -21,6 +26,7 @@ jobs:
         env:
           INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
           INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
+          FETCH_START_DATE: ${{ github.event.inputs.start_date }}
         run: python scripts/fetch_intervals.py
       - name: Commit & push data
         run: |

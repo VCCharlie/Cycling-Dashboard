@@ -31,8 +31,19 @@ HEADERS      = {
 DATA_DIR     = "data"
 
 END_DATE     = datetime.today()
-START_DATE   = END_DATE - relativedelta(months=12)
 FMT          = "%Y-%m-%d"
+
+# FETCH_START_DATE env var overschrijft de standaard 12-maanden window.
+# Zet dit op een vroege datum (bijv. "2015-01-01") voor een volledige historische sync.
+_start_env = os.environ.get("FETCH_START_DATE", "").strip()
+if _start_env:
+    try:
+        START_DATE = datetime.strptime(_start_env, FMT)
+    except ValueError:
+        print(f"  ⚠️  Ongeldige FETCH_START_DATE '{_start_env}', gebruik 12 maanden terug.")
+        START_DATE = END_DATE - relativedelta(months=12)
+else:
+    START_DATE = END_DATE - relativedelta(months=12)
 
 CYCLING_TYPES = {"Ride", "VirtualRide", "GravelRide", "MountainBikeRide", "EBikeRide"}
 
@@ -350,20 +361,54 @@ def fetch_wellness():
     return cleaned
 
 
-def fetch_power_curve():
+def fetch_power_curve(activities: list = None):
+    """
+    Haalt de Mean Maximal Power curve op via de Intervals.icu API.
+    Indien de API leeg of een fout geeft, wordt een curve opgebouwd
+    uit de best_Xmin_w velden in de activiteiten (betrouwbare fallback).
+    """
     print("📡 Power curve ophalen...")
+
+    api_curve = []
     try:
-        curve = _get("power-curves", {
+        raw = _get("power-curve", {
             "oldest":  START_DATE.strftime(FMT),
             "newest":  END_DATE.strftime(FMT),
-            "filters": "type:Ride|VirtualRide|GravelRide",
+            "types":   "Ride,VirtualRide,GravelRide",
         })
-        _save("power_curve.json", curve)
-        return curve
+        # API geeft een lijst van {secs, watts} terug (of {seconds, w})
+        if isinstance(raw, list) and raw:
+            api_curve = [
+                {"secs": int(p.get("secs") or p.get("seconds") or 0),
+                 "watts": int(p.get("watts") or p.get("w") or 0)}
+                for p in raw
+                if (p.get("secs") or p.get("seconds")) and (p.get("watts") or p.get("w"))
+            ]
     except Exception as e:
-        print(f"  ⚠️  Power curve niet beschikbaar: {e}")
-        _save("power_curve.json", [])
-        return []
+        print(f"  ⚠️  Power curve API fout: {e}")
+
+    if api_curve:
+        _save("power_curve.json", api_curve)
+        return api_curve
+
+    # Fallback: bouw curve uit best efforts per activiteit
+    print("  ↩️  Fallback: power curve uit activiteiten berekenen...")
+    acts = activities or []
+    durations = [
+        (1,    "best_1min_w"),
+        (5,    "best_5min_w"),
+        (10,   "best_10min_w"),
+        (20,   "best_20min_w"),
+        (60,   "best_60min_w"),
+    ]
+    curve = []
+    for mins, field in durations:
+        best = max((a.get(field) or 0 for a in acts), default=0)
+        if best > 0:
+            curve.append({"secs": mins * 60, "watts": best})
+
+    _save("power_curve.json", curve)
+    return curve
 
 
 def build_summary(activities: list, wellness: list):
@@ -412,7 +457,7 @@ if __name__ == "__main__":
 
     activities = fetch_activities()
     wellness   = fetch_wellness()
-    fetch_power_curve()
+    fetch_power_curve(activities)
     build_summary(activities, wellness)
 
     print(f"\n🎉 Klaar! {len(activities)} ritten opgeslagen in /{DATA_DIR}/")
