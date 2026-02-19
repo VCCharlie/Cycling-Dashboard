@@ -248,6 +248,25 @@ def normalize_activity(a: dict) -> dict:
     best_60min = safe_int(val("Best60minpower", "best_60min", "best_60min_power", "w60min",
                               "icu_power_60min"))
 
+    # ── Sanity checks best efforts ─────────────────────────────────────────
+    # Absolute maxima (ruim boven wat zelfs een zeer sterke amateur kan)
+    if best_5min  > 900: best_5min  = 0
+    if best_10min > 750: best_10min = 0
+    if best_20min > 650: best_20min = 0
+    if best_60min > 550: best_60min = 0
+
+    # Fysiologisch: langere duur → lagere piek. Schend dit? Dan is de waarde corrupt.
+    # Controleer alleen als de kortere duur ook beschikbaar en geloofwaardig is.
+    if best_5min  and best_1min  and best_5min  > best_1min:  best_5min  = 0
+    if best_10min and best_5min  and best_10min > best_5min:  best_10min = 0
+    if best_20min and best_10min and best_20min > best_10min: best_20min = 0
+    if best_60min and best_20min and best_60min > best_20min: best_60min = 0
+
+    # NP moet ≥ gemiddeld vermogen zijn (variabiliteitsfactor ≥ 1).
+    # Als NP < avg_power dan is één van beide corrupt → beide op 0.
+    if norm_power and avg_power and norm_power < avg_power:
+        norm_power = 0
+
     # ── Training Load (TSS equivalent) ────────────────────────────────────
     load = safe_int(val("icu_training_load", "training_load", "trainingLoad",
                         "power_load", "hr_load", "trimp", "tss"))
