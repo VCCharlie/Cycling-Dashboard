@@ -1,1 +1,17 @@
-[]
+{
+  "updated_at": "2026-02-19T15:12:52.547500",
+  "period_start": "2025-02-19",
+  "period_end": "2026-02-19",
+  "total_rides": 253,
+  "total_distance_km": 8048.6,
+  "total_elevation_m": 148208,
+  "total_hours": 302.3,
+  "total_work_kj": 193992,
+  "best_20min_power_w": 314,
+  "best_60min_power_w": 289,
+  "latest_eftp_w": 0,
+  "current_ctl": 47.5,
+  "current_atl": 48.3,
+  "current_tsb": -0.8,
+  "current_weight_kg": null
+}
