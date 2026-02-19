@@ -270,6 +270,8 @@
     padding: 20px;
     animation: fadeUp 0.5s ease both;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    min-width: 0;          /* voorkomt dat tabel het grid-cell uitrekt */
+    overflow: hidden;      /* sluit tabel in binnen de kaart */
   }
 
   .chart-title {
@@ -423,7 +425,11 @@
     .updated { font-size: 10px; }
     nav { top: 49px; padding: 0 16px; }
     nav button { padding: 10px 12px; font-size: 12px; }
-    .global-filter { top: 88px; padding: 8px 16px; }
+    .global-filter { top: 88px; padding: 8px 16px; gap: 6px; }
+    /* Date inputs volledig oprekken zodat ze niet uitbreken */
+    .global-filter input[type="date"] { flex: 1 1 100px; min-width: 0; font-size: 12px; }
+    .quick-btns { flex-wrap: wrap; }
+    .quick-btn { padding: 4px 8px; font-size: 10px; }
     main { padding: 16px; }
     .chart-grid.cols-2 { grid-template-columns: 1fr; }
     .chart-wrap { height: 180px; }
@@ -434,6 +440,8 @@
     /* Heatmap kleiner op mobiel */
     :root { --hm-cell: 10px; --hm-gap: 2px; }
     .heatmap-days { font-size: 8px; margin-right: 4px; }
+    /* Tabelrijen compacter op mobiel */
+    td, th { padding: 7px 10px; }
   }
 </style>
 </head>
@@ -494,6 +502,31 @@
         <div class="chart-title">Activiteiten heatmap</div>
         <div id="heatmap-container" class="heatmap-outer">
           <div class="loading" style="height:80px">Data laden...</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-grid cols-1">
+      <div class="chart-card">
+        <div class="chart-title">Recente activiteiten</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Naam</th>
+                <th>Type</th>
+                <th>Afstand</th>
+                <th>Duur</th>
+                <th>Hoogte</th>
+                <th>NP</th>
+                <th>TSS</th>
+                <th>Avg HR</th>
+              </tr>
+            </thead>
+            <tbody id="recent-tbody">
+              <tr><td colspan="9"><div class="loading">Data laden...</div></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -809,6 +842,35 @@ function renderHome() {
     }),
     [{ data: moKeys.map(m => Math.round(monthElev[m])), backgroundColor: 'rgba(22,163,74,0.75)', borderRadius: 3 }]
   );
+
+  renderRecentActivities(acts);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Recente activiteiten (Overzicht tab)
+// ─────────────────────────────────────────────────────────────────────────────
+function renderRecentActivities(acts) {
+  const tbody = $('recent-tbody');
+  if (!tbody) return;
+
+  const recent = [...acts].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
+
+  if (!recent.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="color:var(--muted);padding:16px;text-align:center">Geen activiteiten in deze periode</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = recent.map(a => `<tr>
+    <td>${a.date}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${a.title || '—'}</td>
+    <td><span class="badge ${badgeClass(a.type)}">${a.type || '—'}</span></td>
+    <td>${a.distance_km ? a.distance_km.toFixed(1) + ' km' : '—'}</td>
+    <td>${secToHHMM(a.moving_time)}</td>
+    <td>${a.elevation_m ? Math.round(a.elevation_m) + ' m' : '—'}</td>
+    <td>${a.norm_power_w ? a.norm_power_w + ' W' : '—'}</td>
+    <td>${a.tss ? Math.round(a.tss) : '—'}</td>
+    <td>${a.avg_hr_bpm ? Math.round(a.avg_hr_bpm) + ' bpm' : '—'}</td>
+  </tr>`).join('');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
