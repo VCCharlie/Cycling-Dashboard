@@ -36,22 +36,23 @@
 
   /* ── Header ── */
   header {
-    position: relative; z-index: 10;
+    position: sticky; top: 0; z-index: 30;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 32px;
+    padding: 14px 32px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
   }
 
   .logo {
     font-family: var(--font-head);
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 900;
     letter-spacing: 2px;
     text-transform: uppercase;
+    white-space: nowrap;
   }
   .logo span { color: var(--accent); }
 
@@ -60,17 +61,21 @@
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: 1px;
+    white-space: nowrap;
   }
 
   /* ── Navigation ── */
   nav {
-    position: relative; z-index: 10;
+    position: sticky; top: 53px; z-index: 20;
     display: flex;
-    gap: 2px;
     padding: 0 32px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  nav::-webkit-scrollbar { display: none; }
 
   nav button {
     background: none;
@@ -81,10 +86,12 @@
     font-weight: 600;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    padding: 14px 18px;
+    padding: 12px 16px;
     cursor: pointer;
     position: relative;
     transition: color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   nav button::after {
     content: '';
@@ -99,10 +106,60 @@
   nav button.active { color: var(--accent); }
   nav button.active::after { transform: scaleX(1); }
 
+  /* ── Globale filterbalk ── */
+  .global-filter {
+    position: sticky; top: 97px; z-index: 10;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 32px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .global-filter label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .global-filter input[type="date"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 5px 9px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .global-filter input[type="date"]:focus { border-color: var(--accent); }
+
+  .quick-btns { display: flex; gap: 4px; margin-left: 4px; flex-wrap: wrap; }
+  .quick-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .quick-btn:hover,
+  .quick-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
   /* ── Main layout ── */
   main {
-    position: relative; z-index: 1;
-    padding: 28px 32px;
+    padding: 24px 32px;
     max-width: 1400px;
     margin: 0 auto;
   }
@@ -111,25 +168,15 @@
   .tab { display: none; }
   .tab.active { display: block; }
 
-  /* ── Toolbar (filters boven tabellen/grafieken) ── */
-  .toolbar {
+  /* ── Zoekbalk activiteiten ── */
+  .tab-toolbar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 16px;
   }
-  .toolbar label {
-    font-family: var(--font-head);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .toolbar input[type="date"],
-  .toolbar input[type="text"],
-  .toolbar select {
+  .tab-toolbar input[type="text"] {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -138,12 +185,11 @@
     font-size: 13px;
     padding: 6px 10px;
     outline: none;
+    min-width: 200px;
     transition: border-color 0.2s;
   }
-  .toolbar input:focus,
-  .toolbar select:focus { border-color: var(--accent); }
-  .toolbar .search-input { min-width: 180px; }
-  .toolbar .count-label {
+  .tab-toolbar input:focus { border-color: var(--accent); }
+  .tab-toolbar .count-label {
     margin-left: auto;
     font-size: 12px;
     color: var(--muted);
@@ -151,92 +197,20 @@
     letter-spacing: 1px;
     text-transform: uppercase;
   }
-  .btn-reset {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    font-family: var(--font-head);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ── Activiteiten heatmap ── */
-  .heatmap-wrap {
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .heatmap {
-    display: grid;
-    grid-template-rows: repeat(7, 13px);
-    grid-auto-flow: column;
-    gap: 3px;
-    width: max-content;
-  }
-  .hm-cell {
-    width: 13px; height: 13px;
-    border-radius: 2px;
-    background: #e9ecef;
-    cursor: default;
-    position: relative;
-  }
-  .hm-cell[data-level="1"] { background: rgba(249,115,22,0.25); }
-  .hm-cell[data-level="2"] { background: rgba(249,115,22,0.50); }
-  .hm-cell[data-level="3"] { background: rgba(249,115,22,0.75); }
-  .hm-cell[data-level="4"] { background: rgba(249,115,22,1.00); }
-  .hm-cell[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: calc(100% + 4px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1e2330;
-    color: #fff;
-    font-size: 11px;
-    font-family: var(--font-head);
-    white-space: nowrap;
-    padding: 3px 7px;
-    border-radius: 4px;
-    pointer-events: none;
-    z-index: 100;
-  }
-  .heatmap-days {
-    display: grid;
-    grid-template-rows: repeat(7, 13px);
-    gap: 3px;
-    margin-right: 6px;
-    font-size: 9px;
-    font-family: var(--font-head);
-    color: var(--muted);
-    letter-spacing: 0.5px;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  .heatmap-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-  }
 
   /* ── Stat cards row ── */
   .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
 
   .stat-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 20px;
+    padding: 16px 20px;
     position: relative;
     overflow: hidden;
     animation: fadeUp 0.4s ease both;
@@ -258,12 +232,12 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .stat-value {
     font-family: var(--font-head);
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 900;
     line-height: 1;
     color: var(--text);
@@ -271,10 +245,10 @@
 
   .stat-unit {
     font-family: var(--font-head);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
     color: var(--muted);
-    margin-left: 4px;
+    margin-left: 3px;
   }
 
   .stat-card.blue::before  { background: var(--accent2); }
@@ -284,7 +258,7 @@
   .chart-grid {
     display: grid;
     gap: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   .chart-grid.cols-2 { grid-template-columns: 1fr 1fr; }
   .chart-grid.cols-1 { grid-template-columns: 1fr; }
@@ -300,19 +274,22 @@
 
   .chart-title {
     font-family: var(--font-head);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
-  .chart-wrap { position: relative; height: 220px; }
-  .chart-wrap.tall { height: 300px; }
+  .chart-wrap { position: relative; height: 200px; }
+  .chart-wrap.tall { height: 280px; }
+
+  /* Touch-scrolling fix: laat browser verticale scroll afhandelen */
+  canvas { touch-action: pan-y; }
 
   /* ── Activiteiten tabel ── */
-  .table-wrap { overflow-x: auto; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   table {
     width: 100%;
@@ -335,7 +312,7 @@
   }
 
   td {
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
     white-space: nowrap;
@@ -346,7 +323,7 @@
 
   .badge {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 3px;
     font-family: var(--font-head);
     font-size: 10px;
@@ -367,7 +344,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 200px;
+    height: 160px;
     color: var(--muted);
     font-family: var(--font-head);
     letter-spacing: 2px;
@@ -375,18 +352,88 @@
     font-size: 12px;
   }
 
+  /* ── Heatmap ── */
+  .heatmap-outer {
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .heatmap-days {
+    display: grid;
+    grid-template-rows: repeat(7, var(--hm-cell));
+    gap: var(--hm-gap);
+    margin-right: 6px;
+    font-size: 9px;
+    font-family: var(--font-head);
+    color: var(--muted);
+    flex-shrink: 0;
+    padding-top: 0;
+  }
+  .heatmap-days span { display: flex; align-items: center; height: var(--hm-cell); }
+  .heatmap {
+    display: grid;
+    grid-template-rows: repeat(7, var(--hm-cell));
+    grid-auto-flow: column;
+    gap: var(--hm-gap);
+    width: max-content;
+  }
+  .hm-cell {
+    width: var(--hm-cell); height: var(--hm-cell);
+    border-radius: 2px;
+    background: #e9ecef;
+    position: relative;
+    cursor: default;
+  }
+  .hm-cell[data-level="1"] { background: rgba(249,115,22,0.20); }
+  .hm-cell[data-level="2"] { background: rgba(249,115,22,0.45); }
+  .hm-cell[data-level="3"] { background: rgba(249,115,22,0.72); }
+  .hm-cell[data-level="4"] { background: rgba(249,115,22,1.00); }
+  .hm-cell[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e2330;
+    color: #fff;
+    font-size: 11px;
+    font-family: var(--font-head);
+    white-space: nowrap;
+    padding: 3px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 200;
+  }
+
   /* ── Animations ── */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── Desktop: heatmap cells groter ── */
+  :root { --hm-cell: 13px; --hm-gap: 3px; }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
-    header, nav, main { padding-left: 16px; padding-right: 16px; }
+    header { padding: 10px 16px; }
+    .logo { font-size: 20px; }
+    .updated { font-size: 10px; }
+    nav { top: 49px; padding: 0 16px; }
+    nav button { padding: 10px 12px; font-size: 12px; }
+    .global-filter { top: 88px; padding: 8px 16px; }
+    main { padding: 16px; }
     .chart-grid.cols-2 { grid-template-columns: 1fr; }
-    .toolbar { flex-direction: column; align-items: flex-start; }
-    .toolbar .count-label { margin-left: 0; }
+    .chart-wrap { height: 180px; }
+    .chart-wrap.tall { height: 220px; }
+    .tab-toolbar { flex-direction: column; align-items: stretch; }
+    .tab-toolbar input[type="text"] { min-width: 0; width: 100%; }
+    .tab-toolbar .count-label { margin-left: 0; }
+    /* Heatmap kleiner op mobiel */
+    :root { --hm-cell: 10px; --hm-gap: 2px; }
+    .heatmap-days { font-size: 8px; margin-right: 4px; }
   }
 </style>
 </head>
@@ -404,19 +451,25 @@
   <button onclick="showTab('power', this)">Power</button>
 </nav>
 
+<!-- ── Globale filterbalk — geldt voor alle tabs ── -->
+<div class="global-filter">
+  <label>Van</label>
+  <input type="date" id="filter-from" onchange="renderAll()" />
+  <label>Tot</label>
+  <input type="date" id="filter-to" onchange="renderAll()" />
+  <div class="quick-btns">
+    <button class="quick-btn" onclick="setRange('ytd',this)">YTD</button>
+    <button class="quick-btn" onclick="setRange('3m',this)">3M</button>
+    <button class="quick-btn" onclick="setRange('6m',this)">6M</button>
+    <button class="quick-btn" onclick="setRange('1j',this)">1J</button>
+    <button class="quick-btn" onclick="setRange('all',this)">Alles</button>
+  </div>
+</div>
+
 <main>
 
   <!-- ── TAB: OVERZICHT ── -->
   <div id="tab-home" class="tab active">
-    <div class="toolbar">
-      <label>Periode</label>
-      <select id="home-period" onchange="renderHome()">
-        <option value="52">Afgelopen jaar</option>
-        <option value="26" selected>Afgelopen 26 weken</option>
-        <option value="13">Afgelopen 13 weken</option>
-        <option value="8">Afgelopen 8 weken</option>
-      </select>
-    </div>
     <div class="stat-grid" id="home-stats">
       <div class="loading">Data laden...</div>
     </div>
@@ -438,8 +491,8 @@
     </div>
     <div class="chart-grid cols-1">
       <div class="chart-card">
-        <div class="chart-title">Activiteiten — afgelopen 52 weken</div>
-        <div id="heatmap-container" class="heatmap-row">
+        <div class="chart-title">Activiteiten heatmap</div>
+        <div id="heatmap-container" class="heatmap-outer">
           <div class="loading" style="height:80px">Data laden...</div>
         </div>
       </div>
@@ -453,7 +506,7 @@
     </div>
     <div class="chart-grid cols-1">
       <div class="chart-card">
-        <div class="chart-title">CTL / ATL / TSB — afgelopen 12 maanden</div>
+        <div class="chart-title">CTL / ATL / TSB</div>
         <div class="chart-wrap tall"><canvas id="chart-ctl"></canvas></div>
       </div>
     </div>
@@ -461,13 +514,8 @@
 
   <!-- ── TAB: ACTIVITEITEN ── -->
   <div id="tab-activiteiten" class="tab">
-    <div class="toolbar">
-      <label>Van</label>
-      <input type="date" id="filter-from" onchange="applyActivityFilter()" />
-      <label>Tot</label>
-      <input type="date" id="filter-to" onchange="applyActivityFilter()" />
-      <input type="text" class="search-input" id="filter-search" placeholder="Zoek op naam..." oninput="applyActivityFilter()" />
-      <button class="btn-reset" onclick="resetActivityFilter()">Wis filter</button>
+    <div class="tab-toolbar">
+      <input type="text" id="filter-search" placeholder="Zoek op naam..." oninput="renderActiviteiten()" />
       <span class="count-label" id="activity-count"></span>
     </div>
     <div class="chart-card">
@@ -510,7 +558,7 @@
     </div>
     <div class="chart-grid cols-1">
       <div class="chart-card">
-        <div class="chart-title">Mean Maximal Power curve — seizoen best</div>
+        <div class="chart-title">Mean Maximal Power curve</div>
         <div class="chart-wrap tall"><canvas id="chart-mmp"></canvas></div>
       </div>
     </div>
@@ -524,24 +572,26 @@
 // ─────────────────────────────────────────────────────────────────────────────
 const WEIGHT_KG = 75;  // ← Pas aan naar jouw gewicht
 
+// Chart.js globale defaults — touch events uitgeschakeld zodat de pagina
+// normaal scrollt op mobiel; tooltips werken nog via muis/tap op desktop
 const CHART_DEFAULTS = {
   responsive: true,
   maintainAspectRatio: false,
+  events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: '#ffffff',
+      backgroundColor: '#fff',
       titleColor: '#1e2330',
       bodyColor: '#64748b',
       borderColor: '#e2e8f0',
       borderWidth: 1,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
     }
   },
   scales: {
     x: {
       grid: { color: 'rgba(0,0,0,0.05)' },
-      ticks: { color: '#64748b', font: { family: 'Barlow Condensed', size: 11 } }
+      ticks: { color: '#64748b', font: { family: 'Barlow Condensed', size: 11 }, maxRotation: 45 }
     },
     y: {
       grid: { color: 'rgba(0,0,0,0.05)' },
@@ -554,18 +604,16 @@ const CHART_DEFAULTS = {
 // Utils
 // ─────────────────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-
-// Chart instances bijhouden om te kunnen destroyen bij herrender
 const chartInstances = {};
 
-function makeChart(id, type, labels, datasets, extra={}) {
+function makeChart(id, type, labels, datasets, extra = {}) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
-  if (chartInstances[id]) { chartInstances[id].destroy(); }
+  if (chartInstances[id]) chartInstances[id].destroy();
   chartInstances[id] = new Chart(ctx, {
     type,
     data: { labels, datasets },
-    options: deepMerge(CHART_DEFAULTS, extra)
+    options: deepMerge(CHART_DEFAULTS, extra),
   });
 }
 
@@ -584,26 +632,27 @@ function deepMerge(base, override) {
 function secToHHMM(s) {
   if (!s) return '—';
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-  return `${h}:${String(m).padStart(2,'0')}`;
+  return `${h}:${String(m).padStart(2, '0')}`;
 }
 
 function getWeekKey(dateStr) {
   const d = new Date(dateStr);
   const day = d.getDay() || 7;
   d.setDate(d.getDate() + 1 - day);
-  return d.toISOString().slice(0,10);
+  return d.toISOString().slice(0, 10);
 }
 
-function getMonthKey(dateStr) { return dateStr.slice(0,7); }
+function getMonthKey(dateStr) { return dateStr.slice(0, 7); }
 
 function badgeClass(type) {
   if (!type) return 'ride';
-  if (type.toLowerCase().includes('virtual')) return 'virtualride';
-  if (type.toLowerCase().includes('gravel')) return 'gravel';
+  const t = type.toLowerCase();
+  if (t.includes('virtual')) return 'virtualride';
+  if (t.includes('gravel'))  return 'gravel';
   return 'ride';
 }
 
-function statCard(label, value, unit='', colorClass='') {
+function statCard(label, value, unit = '', colorClass = '') {
   return `<div class="stat-card ${colorClass}">
     <div class="stat-label">${label}</div>
     <div class="stat-value">${value}<span class="stat-unit">${unit}</span></div>
@@ -618,6 +667,52 @@ function showTab(name, btn) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Globale filter
+// ─────────────────────────────────────────────────────────────────────────────
+function getFilteredActs() {
+  const from = $('filter-from')?.value || '';
+  const to   = $('filter-to')?.value   || '';
+  let acts = DATA.activities || [];
+  if (from) acts = acts.filter(a => a.date >= from);
+  if (to)   acts = acts.filter(a => a.date <= to);
+  return acts;
+}
+
+function setRange(type, btn) {
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  let from;
+  if (type === 'ytd') {
+    from = `${now.getFullYear()}-01-01`;
+  } else if (type === '3m') {
+    const d = new Date(now); d.setMonth(d.getMonth() - 3);
+    from = d.toISOString().slice(0, 10);
+  } else if (type === '6m') {
+    const d = new Date(now); d.setMonth(d.getMonth() - 6);
+    from = d.toISOString().slice(0, 10);
+  } else if (type === '1j') {
+    const d = new Date(now); d.setFullYear(d.getFullYear() - 1);
+    from = d.toISOString().slice(0, 10);
+  } else {
+    // all
+    const earliest = (DATA.activities || []).reduce((min, a) => a.date < min ? a.date : min, today);
+    from = earliest || '2000-01-01';
+  }
+  $('filter-from').value = from;
+  $('filter-to').value   = today;
+  renderAll();
+}
+
+function renderAll() {
+  renderHome();
+  renderVorm();
+  renderActiviteiten();
+  renderPower();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Data laden
 // ─────────────────────────────────────────────────────────────────────────────
 let DATA = {};
@@ -627,7 +722,7 @@ async function loadJSON(name) {
     const r = await fetch(`data/${name}.json?_=${Date.now()}`);
     if (!r.ok) throw new Error(r.status);
     return r.json();
-  } catch(e) {
+  } catch (e) {
     console.warn(`Kon ${name}.json niet laden:`, e);
     return null;
   }
@@ -641,65 +736,58 @@ async function init() {
     loadJSON('power_curve'),
   ]);
 
-  DATA = { summary, activities: activities || [], wellness: wellness || [], powerCurve: powerCurve || [] };
+  DATA = {
+    summary,
+    activities:  activities  || [],
+    wellness:    wellness    || [],
+    powerCurve:  Array.isArray(powerCurve) ? powerCurve : [],
+  };
 
   if (summary?.updated_at) {
     const d = new Date(summary.updated_at);
-    $('updated-at').textContent = `Bijgewerkt: ${d.toLocaleDateString('nl-NL', {day:'numeric',month:'long',year:'numeric'})}`;
+    $('updated-at').textContent = `Bijgewerkt: ${d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}`;
   }
 
-  // Standaard datumfilter: begin van dit jaar
+  // Standaard: YTD
   const now = new Date();
-  const yearStart = `${now.getFullYear()}-01-01`;
-  const today = now.toISOString().slice(0,10);
-  $('filter-from').value = yearStart;
-  $('filter-to').value = today;
+  $('filter-from').value = `${now.getFullYear()}-01-01`;
+  $('filter-to').value   = now.toISOString().slice(0, 10);
+  document.querySelector('.quick-btn')?.classList.add('active'); // "YTD" actief
 
-  renderHome();
-  renderHeatmap();
-  renderVorm();
-  renderActiviteiten();
-  renderPower();
+  renderHeatmap(); // heatmap gebruikt altijd alle data (52 weken terug)
+  renderAll();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tab: Overzicht
 // ─────────────────────────────────────────────────────────────────────────────
 function renderHome() {
-  const s = DATA.summary || {};
-  const allActs = DATA.activities || [];
-  const weeks = parseInt($('home-period')?.value || '26', 10);
+  const s    = DATA.summary || {};
+  const acts = getFilteredActs();
 
-  // Bereken cutoff datum
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - weeks * 7);
-  const cutoffStr = cutoff.toISOString().slice(0,10);
-  const acts = allActs.filter(a => a.date >= cutoffStr);
-
-  // Stat-kaarten: cijfers over gefilterde periode
-  const totDist = acts.reduce((t,a) => t + (a.distance_km||0), 0);
-  const totElev = acts.reduce((t,a) => t + (a.elevation_m||0), 0);
-  const totSec  = acts.reduce((t,a) => t + (a.moving_time||0), 0);
-  const totTSS  = acts.reduce((t,a) => t + (a.tss||0), 0);
+  const totDist = acts.reduce((t, a) => t + (a.distance_km  || 0), 0);
+  const totElev = acts.reduce((t, a) => t + (a.elevation_m  || 0), 0);
+  const totSec  = acts.reduce((t, a) => t + (a.moving_time  || 0), 0);
+  const totTSS  = acts.reduce((t, a) => t + (a.tss          || 0), 0);
 
   $('home-stats').innerHTML =
     statCard('Ritten', acts.length) +
     statCard('Afstand', Math.round(totDist).toLocaleString('nl-NL'), 'km', 'blue') +
     statCard('Hoogtemeters', Math.round(totElev).toLocaleString('nl-NL'), 'm') +
-    statCard('Uren', (totSec/3600).toFixed(1), 'h', 'green') +
+    statCard('Uren', (totSec / 3600).toFixed(1), 'h', 'green') +
     statCard('TSS totaal', Math.round(totTSS)) +
     statCard('CTL nu', s.current_ctl ?? '—') +
     statCard('TSB nu', s.current_tsb != null
-      ? `<span class="${(s.current_tsb||0) >= 0 ? 'tsb-pos':'tsb-neg'}">${s.current_tsb}</span>` : '—');
+      ? `<span class="${(s.current_tsb || 0) >= 0 ? 'tsb-pos' : 'tsb-neg'}">${s.current_tsb}</span>`
+      : '—');
 
-  // Wekelijkse afstand & TSS
   const weekDist = {}, weekTSS = {}, monthElev = {};
   for (const a of acts) {
     const wk = getWeekKey(a.date);
-    weekDist[wk] = (weekDist[wk]||0) + a.distance_km;
-    weekTSS[wk]  = (weekTSS[wk] ||0) + (a.tss||0);
+    weekDist[wk] = (weekDist[wk] || 0) + a.distance_km;
+    weekTSS[wk]  = (weekTSS[wk]  || 0) + (a.tss || 0);
     const mo = getMonthKey(a.date);
-    monthElev[mo] = (monthElev[mo]||0) + (a.elevation_m||0);
+    monthElev[mo] = (monthElev[mo] || 0) + (a.elevation_m || 0);
   }
 
   const wkKeys = Object.keys(weekDist).sort();
@@ -710,126 +798,91 @@ function renderHome() {
 
   makeChart('chart-weekly-tss', 'bar',
     wkKeys.map(w => w.slice(5)),
-    [{ data: wkKeys.map(w => Math.round(weekTSS[w]||0)), backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 3 }]
+    [{ data: wkKeys.map(w => Math.round(weekTSS[w] || 0)), backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 3 }]
   );
 
   const moKeys = Object.keys(monthElev).sort();
   makeChart('chart-monthly-elevation', 'bar',
-    moKeys.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleString('nl-NL',{month:'short',year:'2-digit'}); }),
+    moKeys.map(m => {
+      const [y, mo] = m.split('-');
+      return new Date(y, mo - 1).toLocaleString('nl-NL', { month: 'short', year: '2-digit' });
+    }),
     [{ data: moKeys.map(m => Math.round(monthElev[m])), backgroundColor: 'rgba(22,163,74,0.75)', borderRadius: 3 }]
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Eddington getal
-// ─────────────────────────────────────────────────────────────────────────────
-function calcEddington(activities) {
-  // Groepeer km per dag (meerdere ritten op 1 dag tellen bij elkaar op)
-  const byDay = {};
-  for (const a of activities) {
-    byDay[a.date] = (byDay[a.date] || 0) + (a.distance_km || 0);
-  }
-  // Grootste E zodat ≥ E dagen bestaan waarop ≥ E km gereden is
-  const dists = Object.values(byDay).map(d => Math.floor(d)).sort((a, b) => b - a);
-  let E = 0;
-  for (let i = 0; i < dists.length; i++) {
-    if (dists[i] >= i + 1) E = i + 1; else break;
-  }
-  return E;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Activiteiten heatmap (GitHub-stijl, 52 weken)
+// Heatmap — altijd 52 weken terug, onafhankelijk van datumfilter
 // ─────────────────────────────────────────────────────────────────────────────
 function renderHeatmap() {
   const acts = DATA.activities || [];
-
-  // Bouw een dag → km map
   const byDay = {};
   for (const a of acts) {
     byDay[a.date] = (byDay[a.date] || 0) + (a.distance_km || 0);
   }
   const maxKm = Math.max(0, ...Object.values(byDay));
 
-  // Kleur-drempelwaarden op basis van max (relatief)
   function level(km) {
-    if (!km) return 0;
-    if (maxKm === 0) return 0;
-    const pct = km / maxKm;
-    if (pct < 0.15) return 1;
-    if (pct < 0.40) return 2;
-    if (pct < 0.70) return 3;
-    return 4;
+    if (!km || maxKm === 0) return 0;
+    const p = km / maxKm;
+    return p < 0.15 ? 1 : p < 0.40 ? 2 : p < 0.70 ? 3 : 4;
   }
 
-  // Bouw 52 weken terug, begin op maandag
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  // Ga naar de maandag van de huidige week
-  const dow = today.getDay() || 7;  // 1=ma, 7=zo
+  const dow = today.getDay() || 7;
   const monday = new Date(today);
   monday.setDate(today.getDate() - (dow - 1));
-  // Start 52 weken geleden
-  const startMonday = new Date(monday);
-  startMonday.setDate(monday.getDate() - 51 * 7);
+  const start = new Date(monday);
+  start.setDate(monday.getDate() - 51 * 7);
 
-  // Verzamel cellen per week (52 weken × 7 dagen)
   const dayLabels = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
-  const cells = [];  // 364 datums in volgorde (dag 0=startMonday)
+  const cells = [];
   for (let i = 0; i < 52 * 7; i++) {
-    const d = new Date(startMonday);
-    d.setDate(startMonday.getDate() + i);
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
     const key = d.toISOString().slice(0, 10);
     const km = byDay[key] || 0;
     cells.push({ key, km, lv: level(km) });
   }
 
-  // Bouw HTML: dag-labels links, dan grid
   const labelHtml = `<div class="heatmap-days">${dayLabels.map(l => `<span>${l}</span>`).join('')}</div>`;
-
-  const gridCells = cells.map(c => {
-    const title = c.km
-      ? `${c.key}: ${c.km.toFixed(1)} km`
-      : c.key;
-    return `<div class="hm-cell" data-level="${c.lv}" title="${title}"></div>`;
+  const grid = cells.map(c => {
+    const t = c.km ? `${c.key}: ${c.km.toFixed(1)} km` : c.key;
+    return `<div class="hm-cell" data-level="${c.lv}" title="${t}"></div>`;
   }).join('');
 
-  $('heatmap-container').innerHTML =
-    labelHtml +
-    `<div class="heatmap-wrap"><div class="heatmap">${gridCells}</div></div>`;
+  $('heatmap-container').innerHTML = labelHtml + `<div class="heatmap">${grid}</div>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tab: Vorm
+// Tab: Vorm  — gefilterd op datumrange
 // ─────────────────────────────────────────────────────────────────────────────
 function renderVorm() {
-  const s = DATA.summary || {};
-  const tsb = s.current_tsb ?? 0;
+  const s    = DATA.summary || {};
+  const tsb  = s.current_tsb ?? 0;
+  const from = $('filter-from')?.value || '';
+  const to   = $('filter-to')?.value   || '';
 
   $('vorm-stats').innerHTML =
     statCard('CTL (Fitness)', s.current_ctl ?? '—', '', 'blue') +
-    statCard('ATL (Vermoeidheid)', s.current_atl ?? '—', '', '') +
+    statCard('ATL (Vermoeidheid)', s.current_atl ?? '—') +
     statCard('TSB (Vorm)', s.current_tsb != null
-      ? `<span class="${tsb >= 0 ? 'tsb-pos':'tsb-neg'}">${s.current_tsb}</span>` : '—');
+      ? `<span class="${tsb >= 0 ? 'tsb-pos' : 'tsb-neg'}">${s.current_tsb}</span>`
+      : '—');
 
-  const w = (DATA.wellness || []).filter(x => x.ctl);
-  const labels = w.map(x => x.date.slice(5));
+  let w = (DATA.wellness || []).filter(x => x.ctl);
+  if (from) w = w.filter(x => x.date >= from);
+  if (to)   w = w.filter(x => x.date <= to);
 
-  makeChart('chart-ctl', 'line', labels, [
-    { label: 'CTL', data: w.map(x=>x.ctl), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.4, pointRadius: 0, fill: true },
-    { label: 'ATL', data: w.map(x=>x.atl), borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.06)', tension: 0.4, pointRadius: 0, fill: true },
-    { label: 'TSB', data: w.map(x=>x.tsb), borderColor: '#16a34a', tension: 0.4, pointRadius: 0 },
+  makeChart('chart-ctl', 'line', w.map(x => x.date.slice(5)), [
+    { label: 'CTL', data: w.map(x => x.ctl), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', tension: 0.4, pointRadius: 0, fill: true },
+    { label: 'ATL', data: w.map(x => x.atl), borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.06)', tension: 0.4, pointRadius: 0, fill: true },
+    { label: 'TSB', data: w.map(x => x.tsb), borderColor: '#16a34a', tension: 0.4, pointRadius: 0 },
   ], {
     plugins: {
-      legend: {
-        display: true,
-        labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } }
-      },
-      annotation: {
-        annotations: {
-          zero: { type: 'line', yMin: 0, yMax: 0, borderColor: 'rgba(0,0,0,0.15)', borderWidth: 1 }
-        }
-      }
+      legend: { display: true, labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } } },
+      annotation: { annotations: { zero: { type: 'line', yMin: 0, yMax: 0, borderColor: 'rgba(0,0,0,0.12)', borderWidth: 1 } } }
     }
   });
 }
@@ -838,24 +891,14 @@ function renderVorm() {
 // Tab: Activiteiten
 // ─────────────────────────────────────────────────────────────────────────────
 function renderActiviteiten() {
-  applyActivityFilter();
-}
-
-function applyActivityFilter() {
-  const from   = $('filter-from')?.value || '';
-  const to     = $('filter-to')?.value   || '';
   const search = ($('filter-search')?.value || '').toLowerCase().trim();
-
-  let acts = [...(DATA.activities || [])].sort((a,b) => b.date.localeCompare(a.date));
-
-  if (from) acts = acts.filter(a => a.date >= from);
-  if (to)   acts = acts.filter(a => a.date <= to);
-  if (search) acts = acts.filter(a => (a.title||'').toLowerCase().includes(search));
+  let acts = [...getFilteredActs()].sort((a, b) => b.date.localeCompare(a.date));
+  if (search) acts = acts.filter(a => (a.title || '').toLowerCase().includes(search));
 
   const total = (DATA.activities || []).length;
   $('activity-count').textContent = acts.length === total
     ? `${total} activiteiten`
-    : `${acts.length} van ${total} activiteiten`;
+    : `${acts.length} van ${total}`;
 
   if (!acts.length) {
     $('activities-tbody').innerHTML = `<tr><td colspan="12" style="color:var(--muted);padding:20px;text-align:center">Geen activiteiten gevonden</td></tr>`;
@@ -863,62 +906,76 @@ function applyActivityFilter() {
   }
 
   $('activities-tbody').innerHTML = acts.map(a => {
-    // FTP: gebruik ftp_w (ingesteld voor die activiteit), anders summary FTP
-    const ftp = a.ftp_w || (DATA.summary?.best_20min_power_w ? Math.round((DATA.summary.best_20min_power_w) * 0.95) : null);
-    // W/kg op basis van NP of avg power
-    const pw = a.norm_power_w || a.avg_power_w;
+    const ftp = a.ftp_w || (DATA.summary?.best_20min_power_w ? Math.round(DATA.summary.best_20min_power_w * 0.95) : null);
+    const pw  = a.norm_power_w || a.avg_power_w;
     const wkg = pw ? (pw / WEIGHT_KG).toFixed(2) : null;
-
     return `<tr>
       <td>${a.date}</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${a.title || '—'}</td>
-      <td><span class="badge ${badgeClass(a.type)}">${a.type||'—'}</span></td>
-      <td>${a.distance_km ? a.distance_km.toFixed(1)+' km' : '—'}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${a.title || '—'}</td>
+      <td><span class="badge ${badgeClass(a.type)}">${a.type || '—'}</span></td>
+      <td>${a.distance_km ? a.distance_km.toFixed(1) + ' km' : '—'}</td>
       <td>${secToHHMM(a.moving_time)}</td>
-      <td>${a.elevation_m ? Math.round(a.elevation_m)+' m' : '—'}</td>
-      <td>${a.avg_power_w ? a.avg_power_w+' W' : '—'}</td>
-      <td>${a.norm_power_w ? a.norm_power_w+' W' : '—'}</td>
+      <td>${a.elevation_m ? Math.round(a.elevation_m) + ' m' : '—'}</td>
+      <td>${a.avg_power_w ? a.avg_power_w + ' W' : '—'}</td>
+      <td>${a.norm_power_w ? a.norm_power_w + ' W' : '—'}</td>
       <td>${a.tss ? Math.round(a.tss) : '—'}</td>
-      <td>${a.avg_hr_bpm ? Math.round(a.avg_hr_bpm)+' bpm' : '—'}</td>
-      <td>${ftp ? ftp+' W' : '—'}</td>
-      <td>${wkg ? wkg+' w/kg' : '—'}</td>
+      <td>${a.avg_hr_bpm ? Math.round(a.avg_hr_bpm) + ' bpm' : '—'}</td>
+      <td>${ftp ? ftp + ' W' : '—'}</td>
+      <td>${wkg ? wkg + ' w/kg' : '—'}</td>
     </tr>`;
   }).join('');
-}
-
-function resetActivityFilter() {
-  const now = new Date();
-  $('filter-from').value  = `${now.getFullYear()}-01-01`;
-  $('filter-to').value    = now.toISOString().slice(0,10);
-  $('filter-search').value = '';
-  applyActivityFilter();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tab: Power
 // ─────────────────────────────────────────────────────────────────────────────
+function calcEddington(acts) {
+  const byDay = {};
+  for (const a of acts) byDay[a.date] = (byDay[a.date] || 0) + (a.distance_km || 0);
+  const dists = Object.values(byDay).map(d => Math.floor(d)).sort((a, b) => b - a);
+  let E = 0;
+  for (let i = 0; i < dists.length; i++) {
+    if (dists[i] >= i + 1) E = i + 1; else break;
+  }
+  return E;
+}
+
+function buildMmpFromActivities(acts) {
+  const fields = [
+    { secs: 60,   f: 'best_1min_w'  },
+    { secs: 300,  f: 'best_5min_w'  },
+    { secs: 600,  f: 'best_10min_w' },
+    { secs: 1200, f: 'best_20min_w' },
+    { secs: 3600, f: 'best_60min_w' },
+  ];
+  return fields
+    .map(({ secs, f }) => ({ secs, watts: Math.max(0, ...acts.map(a => a[f] || 0)) }))
+    .filter(p => p.watts > 0);
+}
+
 function renderPower() {
-  const acts = DATA.activities || [];
-  const s    = DATA.summary || {};
+  const acts      = getFilteredActs();
+  const allActs   = DATA.activities || [];  // voor Eddington over alles
+  const s         = DATA.summary || {};
   const withPower = acts.filter(a => a.avg_power_w);
 
-  // Season best efforts
   const best1m  = Math.max(0, ...acts.map(a => a.best_1min_w  || 0));
   const best5m  = Math.max(0, ...acts.map(a => a.best_5min_w  || 0));
   const best20m = Math.max(0, ...acts.map(a => a.best_20min_w || 0));
   const best60m = Math.max(0, ...acts.map(a => a.best_60min_w || 0));
 
-  // eFTP: gebruik latest_eftp_w als > 0, anders 95% van best 20-min
   const eFTP = (s.latest_eftp_w && s.latest_eftp_w > 0)
     ? s.latest_eftp_w
-    : (best20m > 0 ? Math.round(best20m * 0.95) : (s.best_20min_power_w ? Math.round(s.best_20min_power_w * 0.95) : 0));
+    : (best20m > 0 ? Math.round(best20m * 0.95)
+      : (s.best_20min_power_w ? Math.round(s.best_20min_power_w * 0.95) : 0));
 
-  const avgNP = withPower.filter(a=>a.norm_power_w).length
-    ? Math.round(withPower.filter(a=>a.norm_power_w).reduce((t,a)=>t+(a.norm_power_w||0),0)
-      / withPower.filter(a=>a.norm_power_w).length)
+  const avgNP = withPower.filter(a => a.norm_power_w).length
+    ? Math.round(withPower.filter(a => a.norm_power_w)
+        .reduce((t, a) => t + (a.norm_power_w || 0), 0)
+      / withPower.filter(a => a.norm_power_w).length)
     : 0;
 
-  const eddington = calcEddington(acts);
+  const eddington = calcEddington(allActs); // altijd over volledige dataset
 
   $('power-stats').innerHTML =
     statCard('1 min best', best1m  || '—', 'W') +
@@ -926,12 +983,12 @@ function renderPower() {
     statCard('20 min best', best20m || s.best_20min_power_w || '—', 'W') +
     statCard('60 min best', best60m || s.best_60min_power_w || '—', 'W', 'blue') +
     statCard('eFTP', eFTP || '—', 'W', 'green') +
-    (eFTP ? statCard('eFTP W/kg', (eFTP/WEIGHT_KG).toFixed(2), 'w/kg', 'green') : '') +
+    (eFTP ? statCard('eFTP W/kg', (eFTP / WEIGHT_KG).toFixed(2), 'w/kg', 'green') : '') +
     statCard('Gem. NP', avgNP || '—', 'W') +
-    (best20m ? statCard('W/kg (20m)', (best20m/WEIGHT_KG).toFixed(2), 'w/kg') : '') +
+    (best20m ? statCard('W/kg (20m)', (best20m / WEIGHT_KG).toFixed(2), 'w/kg') : '') +
     statCard('Eddington', eddington || '—', 'km');
 
-  // ── Best efforts grafiek per maand ───────────────────────────────────────
+  // ── Best efforts per maand ─────────────────────────────────────────────
   const monthBests = {};
   for (const a of acts) {
     const mo = getMonthKey(a.date);
@@ -940,28 +997,41 @@ function renderPower() {
     if ((a.best_20min_w || 0) > monthBests[mo].b20) monthBests[mo].b20 = a.best_20min_w;
     if ((a.best_60min_w || 0) > monthBests[mo].b60) monthBests[mo].b60 = a.best_60min_w;
   }
-  const months = Object.keys(monthBests).sort();
-  const moLabels = months.map(m => { const [y,mo] = m.split('-'); return new Date(y,mo-1).toLocaleString('nl-NL',{month:'short',year:'2-digit'}); });
+  const months   = Object.keys(monthBests).sort();
+  const moLabels = months.map(m => {
+    const [y, mo] = m.split('-');
+    return new Date(y, mo - 1).toLocaleString('nl-NL', { month: 'short', year: '2-digit' });
+  });
 
   makeChart('chart-best-efforts', 'line', moLabels, [
     { label: '5 min',  data: months.map(m => monthBests[m].b5  || null), borderColor: '#3b82f6', tension: 0.4, pointRadius: 3, spanGaps: true },
     { label: '20 min', data: months.map(m => monthBests[m].b20 || null), borderColor: '#f97316', tension: 0.4, pointRadius: 3, spanGaps: true },
     { label: '60 min', data: months.map(m => monthBests[m].b60 || null), borderColor: '#16a34a', tension: 0.4, pointRadius: 3, spanGaps: true },
   ], {
-    plugins: {
-      legend: { display: true, labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } } }
-    }
+    plugins: { legend: { display: true, labels: { color: '#64748b', font: { family: 'Barlow Condensed', size: 12 } } } }
   });
 
-  // ── MMP curve ────────────────────────────────────────────────────────────
-  const pc = DATA.powerCurve || [];
+  // ── MMP curve ─────────────────────────────────────────────────────────
+  // Gebruik API data als beschikbaar, anders fallback uit activiteiten
+  let pc = DATA.powerCurve.length ? DATA.powerCurve : buildMmpFromActivities(allActs);
+
   if (pc.length) {
     const pcLabels = pc.map(p => {
-      const s = p.secs ?? p.seconds ?? 0;
-      return s < 60 ? s + 's' : s < 3600 ? Math.round(s / 60) + 'm' : (s / 3600).toFixed(1) + 'h';
+      const secs = p.secs ?? p.seconds ?? 0;
+      return secs < 60 ? secs + 's'
+        : secs < 3600  ? Math.round(secs / 60) + 'm'
+        : (secs / 3600).toFixed(1) + 'h';
     });
     makeChart('chart-mmp', 'line', pcLabels, [
-      { label: 'MMP', data: pc.map(p => p.w ?? p.watts ?? null), borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.08)', tension: 0.4, pointRadius: 0, fill: true },
+      {
+        label: 'MMP',
+        data: pc.map(p => p.watts ?? p.w ?? null),
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.08)',
+        tension: 0.4,
+        pointRadius: pc.length <= 10 ? 4 : 0,
+        fill: true,
+      },
     ]);
   }
 }
