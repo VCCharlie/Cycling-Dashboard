@@ -1,22 +1,22 @@
 [
   {
     "secs": 60,
-    "watts": 990
+    "watts": 580
   },
   {
     "secs": 300,
-    "watts": 379
+    "watts": 352
   },
   {
     "secs": 600,
-    "watts": 361
+    "watts": 328
   },
   {
     "secs": 1200,
-    "watts": 316
+    "watts": 314
   },
   {
     "secs": 3600,
-    "watts": 301
+    "watts": 289
   }
 ]
