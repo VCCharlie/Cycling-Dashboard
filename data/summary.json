@@ -1,8 +1,8 @@
 {
-  "updated_at": "2026-02-21T04:42:01.654664",
-  "period_start": "2025-02-21",
-  "period_end": "2026-02-21",
-  "total_rides": 251,
+  "updated_at": "2026-02-22T04:54:33.751032",
+  "period_start": "2025-02-22",
+  "period_end": "2026-02-22",
+  "total_rides": 252,
   "total_distance_km": 8159.5,
   "total_elevation_m": 148443,
   "total_hours": 304.4,
@@ -10,8 +10,8 @@
   "best_20min_power_w": 314,
   "best_60min_power_w": 289,
   "latest_eftp_w": 0,
-  "current_ctl": 57.5,
-  "current_atl": 97.7,
-  "current_tsb": -40.1,
+  "current_ctl": 56.2,
+  "current_atl": 84.7,
+  "current_tsb": -28.5,
   "current_weight_kg": null
 }
