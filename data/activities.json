@@ -5206,33 +5206,5 @@
     "eftp_w": 0,
     "avg_altitude_m": 0,
     "max_altitude_m": 4
-  },
-  {
-    "id": "i68569796",
-    "date": "2025-03-08",
-    "type": "Ride",
-    "title": "Weird balls deluxe",
-    "moving_time": 4730,
-    "distance_km": 41.43,
-    "elevation_m": 109,
-    "avg_speed_kmh": 29.0,
-    "avg_power_w": 233,
-    "norm_power_w": 257,
-    "max_power_w": 788,
-    "max_power_source": "instant",
-    "best_1min_w": 338,
-    "best_5min_w": 298,
-    "best_10min_w": 285,
-    "best_20min_w": 270,
-    "best_60min_w": 243,
-    "tss": 100,
-    "rpe": null,
-    "avg_hr_bpm": 153,
-    "max_hr_bpm": 168,
-    "work_kj": 1204,
-    "ftp_w": 295,
-    "eftp_w": 0,
-    "avg_altitude_m": 5,
-    "max_altitude_m": 14
   }
 ]
