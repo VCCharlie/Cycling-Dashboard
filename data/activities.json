@@ -5178,33 +5178,5 @@
     "eftp_w": 0,
     "avg_altitude_m": 101,
     "max_altitude_m": 318
-  },
-  {
-    "id": "i68687398",
-    "date": "2025-03-09",
-    "type": "Ride",
-    "title": "I'll be clumsy again",
-    "moving_time": 5143,
-    "distance_km": 44.64,
-    "elevation_m": 75,
-    "avg_speed_kmh": 31.2,
-    "avg_power_w": 228,
-    "norm_power_w": 239,
-    "max_power_w": 735,
-    "max_power_source": "instant",
-    "best_1min_w": 311,
-    "best_5min_w": 268,
-    "best_10min_w": 257,
-    "best_20min_w": 242,
-    "best_60min_w": 230,
-    "tss": 94,
-    "rpe": null,
-    "avg_hr_bpm": 145,
-    "max_hr_bpm": 161,
-    "work_kj": 1193,
-    "ftp_w": 295,
-    "eftp_w": 0,
-    "avg_altitude_m": 0,
-    "max_altitude_m": 4
   }
 ]
