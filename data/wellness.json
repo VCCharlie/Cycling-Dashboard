@@ -1,15 +1,5 @@
 [
   {
-    "date": "2025-03-23",
-    "ctl": 37.4,
-    "atl": 54.3,
-    "tsb": -16.8,
-    "rhr_bpm": 101,
-    "hrv": null,
-    "weight_kg": null,
-    "sleep_secs": null
-  },
-  {
     "date": "2025-03-24",
     "ctl": 36.6,
     "atl": 47.1,
@@ -3654,6 +3644,16 @@
     "ctl": 46.8,
     "atl": 56.4,
     "tsb": -9.6,
+    "rhr_bpm": null,
+    "hrv": null,
+    "weight_kg": null,
+    "sleep_secs": null
+  },
+  {
+    "date": "2026-03-24",
+    "ctl": 45.7,
+    "atl": 48.9,
+    "tsb": -3.2,
     "rhr_bpm": null,
     "hrv": null,
     "weight_kg": null,

@@ -5122,33 +5122,5 @@
     "eftp_w": 0,
     "avg_altitude_m": 17,
     "max_altitude_m": 82
-  },
-  {
-    "id": "i70651137",
-    "date": "2025-03-23",
-    "type": "Ride",
-    "title": "Attic Ocean - Lilies and Sea",
-    "moving_time": 4588,
-    "distance_km": 41.45,
-    "elevation_m": 174,
-    "avg_speed_kmh": 31.9,
-    "avg_power_w": 240,
-    "norm_power_w": 271,
-    "max_power_w": 874,
-    "max_power_source": "instant",
-    "best_1min_w": 402,
-    "best_5min_w": 301,
-    "best_10min_w": 289,
-    "best_20min_w": 266,
-    "best_60min_w": 248,
-    "tss": 108,
-    "rpe": 6,
-    "avg_hr_bpm": 150,
-    "max_hr_bpm": 170,
-    "work_kj": 1121,
-    "ftp_w": 295,
-    "eftp_w": 0,
-    "avg_altitude_m": -1,
-    "max_altitude_m": 12
   }
 ]
