@@ -5094,33 +5094,5 @@
     "eftp_w": 0,
     "avg_altitude_m": 554,
     "max_altitude_m": 1158
-  },
-  {
-    "id": "i71019198",
-    "date": "2025-03-25",
-    "type": "VirtualRide",
-    "title": "Zwift - Group Ride: Stage 4 | The Zwift Big Spin 2025 on Watopia's Waistband in Watopia",
-    "moving_time": 4236,
-    "distance_km": 45.26,
-    "elevation_m": 268,
-    "avg_speed_kmh": 38.5,
-    "avg_power_w": 213,
-    "norm_power_w": 227,
-    "max_power_w": 545,
-    "max_power_source": "instant",
-    "best_1min_w": 389,
-    "best_5min_w": 333,
-    "best_10min_w": 287,
-    "best_20min_w": 240,
-    "best_60min_w": 218,
-    "tss": 70,
-    "rpe": null,
-    "avg_hr_bpm": 140,
-    "max_hr_bpm": 175,
-    "work_kj": 900,
-    "ftp_w": 295,
-    "eftp_w": 0,
-    "avg_altitude_m": 17,
-    "max_altitude_m": 82
   }
 ]
